@@ -1,0 +1,13 @@
+﻿# Generated / local artifacts
+.vscode/jass-cache/
+build/AllCode.generated.j
+logs/
+backups/
+*.bak
+*.tmp
+
+# Warcraft/editor local exports
+war3map.j
+war3map.w3i
+war3map.wtg
+war3map.wct
