@@ -1,4 +1,4 @@
-library RestTimeUI requires PlayerUtils, PreConfi, RestTimeState, RestTimeMenuBridge
+library RestTimeUI requires PlayerUtils, PreConfi, RestTimeState
 
     function RestTimeSetBoardTitle takes string title returns nothing
         if SwlsMultiboard != null then
@@ -9,23 +9,14 @@ library RestTimeUI requires PlayerUtils, PreConfi, RestTimeState, RestTimeMenuBr
 
     function RestTimeSetStatusForActivePlayers takes string statusText returns nothing
         set RestStatusText = statusText
-        call RestTimeMenuApplyStatusForActivePlayers()
     endfunction
 
     function RestTimeCloseTenderForActivePlayers takes nothing returns nothing
-        local integer i = 0
-        local User u
-        loop
-            exitwhen i == User.AmountPlaying
-            set u = User.fromPlaying(i)
-            set isTender[u.id] = false
-            set i = i + 1
-        endloop
-        call RestTimeMenuCloseTenderForActivePlayers()
+        // Phase 1 rebuild: no Tender/MenuClient UI to close.
     endfunction
 
     function RestTimeShowClientsForActivePlayers takes nothing returns nothing
-        call RestTimeMenuShowClientsForActivePlayers()
+        // Phase 1 rebuild: multiboard is the only rest-time UI.
     endfunction
 
 endlibrary

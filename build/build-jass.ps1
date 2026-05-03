@@ -3,6 +3,8 @@ param(
     [switch]$Watch,
     [int]$DebounceMs = 250,
     [string[]]$IgnoreDirs = @("build", "Pruebas", "MissileExamples", "logs"),
+    [string]$SourceExcludeFile = "build/build-jass.excludes.txt",
+    [string[]]$ExcludeSources = @(),
     [switch]$SkipRequireValidation
 )
 
@@ -78,6 +80,7 @@ if ([string]::IsNullOrWhiteSpace($OutputPath)) {
 
 $outputAbs = Resolve-AbsolutePath -PathValue $OutputPath -BaseDir $workspaceRoot
 $ignoreAbsDirs = @()
+$sourceExcludePatterns = New-Object System.Collections.Generic.List[string]
 
 if ($DebounceMs -lt 50) {
     $DebounceMs = 50
@@ -89,6 +92,45 @@ foreach ($dir in $IgnoreDirs) {
     }
     $abs = Resolve-AbsolutePath -PathValue $dir -BaseDir $workspaceRoot
     $ignoreAbsDirs += ($abs.TrimEnd("\", "/") + "\")
+}
+
+function Add-SourceExcludePattern {
+    param([string]$Pattern)
+
+    if ([string]::IsNullOrWhiteSpace($Pattern)) {
+        return
+    }
+
+    $clean = $Pattern.Trim()
+    if ($clean.StartsWith("#")) {
+        return
+    }
+
+    $sourceExcludePatterns.Add((Normalize-SourceEntry -Entry $clean))
+}
+
+foreach ($pattern in $ExcludeSources) {
+    Add-SourceExcludePattern -Pattern $pattern
+}
+
+if (-not [string]::IsNullOrWhiteSpace($SourceExcludeFile)) {
+    $excludeFileAbs = Resolve-AbsolutePath -PathValue $SourceExcludeFile -BaseDir $workspaceRoot
+    if (Test-Path -LiteralPath $excludeFileAbs -PathType Leaf) {
+        Get-Content -LiteralPath $excludeFileAbs | ForEach-Object {
+            Add-SourceExcludePattern -Pattern $_
+        }
+    }
+}
+
+function Should-ExcludeSourceEntry {
+    param([Parameter(Mandatory = $true)][string]$SourceEntry)
+
+    foreach ($pattern in $sourceExcludePatterns) {
+        if ($SourceEntry -like $pattern) {
+            return $true
+        }
+    }
+    return $false
 }
 
 function Should-IgnorePath {
@@ -119,6 +161,9 @@ function Get-DiscoverableSourceEntries {
 
         $rel = Get-RelativePathSafe -BaseDir $workspaceRoot -TargetPath $full
         $normalized = Normalize-SourceEntry -Entry $rel
+        if (Should-ExcludeSourceEntry -SourceEntry $normalized) {
+            return
+        }
         if ($seen.Add($normalized)) {
             $found.Add($normalized)
         }
@@ -135,7 +180,7 @@ function Parse-LibraryDeclarationLine {
         [Parameter(Mandatory = $true)][string]$SourceEntry
     )
 
-    $lineNoComment = $DeclarationLine.Split("//")[0].Trim()
+    $lineNoComment = [regex]::Replace($DeclarationLine.Split("//")[0], "/\*.*?\*/", "").Trim()
     if ([string]::IsNullOrWhiteSpace($lineNoComment)) {
         return $null
     }
@@ -280,7 +325,10 @@ function Invoke-Build {
 
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.AppendLine("// AUTO-GENERATED FILE. DO NOT EDIT DIRECTLY.")
-    [void]$sb.AppendLine("// Source discovery: all .j files excluding: $($IgnoreDirs -join ', ')")
+    [void]$sb.AppendLine("// Source discovery: all .j files excluding dirs: $($IgnoreDirs -join ', ')")
+    if ($sourceExcludePatterns.Count -gt 0) {
+        [void]$sb.AppendLine("// Source exclude patterns: $($sourceExcludePatterns -join ', ')")
+    }
     [void]$sb.AppendLine("// Source order: deterministic path sort; vJASS library requires own compile/init order.")
     [void]$sb.AppendLine("// Generated at: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
     [void]$sb.AppendLine("")

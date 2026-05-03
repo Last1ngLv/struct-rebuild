@@ -1,0 +1,15 @@
+﻿# Phase 1 explicit source exclusions.
+# Patterns use PowerShell -like syntax against normalized relative paths.
+
+# UI/MenuClient is intentionally excluded from the rebuild core.
+UI System/*
+Systems/Tender/*
+
+# Enemy spell packages are introduced after the basic wave/AI loop is stable.
+WaveSysAnAI/WaveProjectiles/*
+
+# Local/generated artifacts.
+build/AllCode.generated.j
+.vscode/jass-cache/*
+Pruebas/*
+logs/*

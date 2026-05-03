@@ -1,5 +1,5 @@
 ﻿
-library stage1 initializer InitStage1 requires PlayerUtils, WaveTest, HeroLives, AIProfiles, AIConfig, IAManager, TenderSystem, PreConfi, WavePointGroupsConfig, PlayerHeroState, WaveMultiboard
+library stage1 initializer InitStage1 requires PlayerUtils, WaveTest, HeroLives, AIProfiles, AIConfig, IAManager, PreConfi, WavePointGroupsConfig, PlayerHeroState, WaveMultiboard
 
 function Trig_w1_Actions takes nothing returns nothing
     local Wave w
@@ -9,9 +9,6 @@ function Trig_w1_Actions takes nothing returns nothing
     local User u
     local integer currentGold
     
-    if GetTenderUnit() != null then
-        call SetUnitAnimation(GetTenderUnit(), "Spell")
-    endif
     if TargetWave > 1 then
         if SwlsSound != null then
             call StopSound(SwlsSound, true, false)
@@ -120,7 +117,7 @@ function Trig_w1_Actions takes nothing returns nothing
         call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HPEA, 'hpea', 1, false, 2, 1, 1, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
         //call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HKNI, 'hkni', 2, true, 2, 1, 5, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
         //call w.addSlotExByPlayer('zA04', 1,true, 2, 1, 1, 15, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
-        //call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMPR, 'hmpr', 1, true, 2, 1, 7, -1, false, AI_PROFILE_WAVE7_SPELL, 0, 0, 1.10)
+        //call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMPR, 'hmpr', 1, true, 2, 1, 7, -1, false, AI_PROFILE_MELEE, 0, 0, 1.10)
         // Ejemplo spell-profile (requiere que la unidad tenga la habilidad configurada en AIConfig):
         // call w.addSlotExByPlayers('hfoo', 2, true, 2, 1, 1, -1, false, AI_PROFILE_WAVE1_SPELL, 0, 0, 1.00)
         // Boss unico REAL (owner puntual, sin escalar por jugadores activos):
@@ -129,60 +126,60 @@ function Trig_w1_Actions takes nothing returns nothing
         // call w.addSlotExByPlayers('Umbs', 1, true, 1, 8, 11, -1, true, AI_PROFILE_MELEE, 0, 0, 1.40)
 
         //call w.addSlotExByPlayer('hpea', 1,false, 2, 1, 1, -1, false,Player(11), AI_PROFILE_MELEE, 0, 0, 1.00)
-        //call w.addSlotExByPlayer('hmpr', 2,false, 2, 1, 1, -1, false,Player(11), AI_PROFILE_WAVE7_SPELL, 0, 0, 1.00)
+        //call w.addSlotExByPlayer('hmpr', 2,false, 2, 1, 1, -1, false,Player(11), AI_PROFILE_MELEE, 0, 0, 1.00)
         endif
         if TargetWave >= 2 then
             call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMIL, 'hmil', 2, false, 2, 1, 2, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 2 then
-                call w.addSlotExByPlayer('zA01', 2,false, 2, 1, 1, 5, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
+                // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA01', 2,false, 2, 1, 1, 5, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 3 then
             call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HFOO, 'hfoo', 2, false, 2, 1, 3, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 3 then
-            call w.addSlotExByPlayer('zA02', 2,false, 2, 1, 1, 10, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA02', 2,false, 2, 1, 1, 10, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
         endif
             endif
         if TargetWave >= 4 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HRIF, 'hrif', 2, false, 2, 1, 4, -1, false, AI_PROFILE_WAVE4_SPELL, 0, 0, 1.00)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HRIF, 'hrif', 2, false, 2, 1, 4, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 4 then
-            call w.addSlotExByPlayer('zA03', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA03', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
         endif
             endif
         if TargetWave >= 5 then
             call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HKNI, 'hkni', 2, true, 2, 1, 5, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 5 then
-            call w.addSlotExByPlayer('zA04', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA04', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 6 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMTM, 'hmtm', 2, true, 2, 1, 6, -1, false, AI_PROFILE_WAVE6_SPELL, 0, 0, 1.00)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMTM, 'hmtm', 2, true, 2, 1, 6, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 6 then
-            call w.addSlotExByPlayer('zA05', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE6_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA05', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE6_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 7 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMPR, 'hmpr', 2, true, 2, 1, 7, -1, false, AI_PROFILE_WAVE7_SPELL, 0, 0, 1.10)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMPR, 'hmpr', 2, true, 2, 1, 7, -1, false, AI_PROFILE_MELEE, 0, 0, 1.10)
             if TargetWave == 7 then
-            call w.addSlotExByPlayer('zA07', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE7_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA07', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE7_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 8 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HSOR, 'hsor', 2, true, 2, 1, 8, -1, false, AI_PROFILE_WAVE8_SPELL, 0, 0, 1.20)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HSOR, 'hsor', 2, true, 2, 1, 8, -1, false, AI_PROFILE_MELEE, 0, 0, 1.20)
             if TargetWave == 8 then
-            call w.addSlotExByPlayer('zA06', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE8_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA06', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE8_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 9 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMTT, 'hmtt', 2, true, 2, 1, 9, -1, false, AI_PROFILE_WAVE9_SPELL, 0, 0, 1.00)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HMTT, 'hmtt', 2, true, 2, 1, 9, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 9 then
-            call w.addSlotExByPlayer('zA08', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE9_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA08', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE9_BOSS, 0, 0, 1.00)
             endif
         endif
         if TargetWave >= 10 then
-            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HWT3, 'hwt3', 2, true, 2, 1, 10, -1, false, AI_PROFILE_WAVE10_SPELL, 0, 0, 1.00)
+            call w.upsertSlotExByPlayers(AI_STAGE1_SLOT_GROUP_HWT3, 'hwt3', 2, true, 2, 1, 10, -1, false, AI_PROFILE_MELEE, 0, 0, 1.00)
             if TargetWave == 10 then
-            call w.addSlotExByPlayer('zA09', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE10_BOSS, 0, 0, 1.00)
+            // Phase 1 disabled boss spawn: call w.addSlotExByPlayer('zA09', 2,false, 2, 1, 1, 15, true,Player(11), AI_PROFILE_WAVE10_BOSS, 0, 0, 1.00)
             endif
         endif
 

@@ -1,33 +1,14 @@
-library SelectionClientBridge requires PlayerUtils, MenuClient, PlayerHeroState
+library SelectionClientBridge requires PlayerUtils, PlayerHeroState
 
     function SelectionCreateClients takes nothing returns nothing
-        local integer i = 0
-        local User u
-        local unit hero
-        local Client client
-
-        loop
-            exitwhen i == User.AmountPlaying
-            set u = User.fromPlaying(i)
-            set hero = PlayerHero[u.id]
-
-            if hero != null and GetUnitTypeId(hero) != 0 then
-                if Client[hero] == 0 then
-                    set client = Client.create(hero)
-                else
-                    set client = Client[hero]
-                endif
-            endif
-
-            set i = i + 1
-        endloop
+        // Phase 1 rebuild: MenuClient is intentionally not loaded.
+        // Keep this API as a no-op so SelectionStartFlow stays stable.
     endfunction
 
     function SelectionShowClients takes nothing returns nothing
         local integer i = 0
         local User u
         local unit hero
-        local Client client
 
         loop
             exitwhen i == User.AmountPlaying
@@ -35,12 +16,6 @@ library SelectionClientBridge requires PlayerUtils, MenuClient, PlayerHeroState
             set hero = PlayerHero[u.id]
 
             if hero != null and GetUnitTypeId(hero) != 0 then
-                set client = Client[hero]
-
-                if client != 0 and PlayerCamera[u.id] != 0 then
-                    call client.show(true, PlayerCamera[u.id])
-                endif
-
                 if User.Local == u.handle then
                     call SelectUnit(hero, true)
                     call PanCameraToTimed(GetUnitX(hero), GetUnitY(hero), 0)
@@ -49,6 +24,8 @@ library SelectionClientBridge requires PlayerUtils, MenuClient, PlayerHeroState
 
             set i = i + 1
         endloop
+
+        set hero = null
     endfunction
 
 endlibrary

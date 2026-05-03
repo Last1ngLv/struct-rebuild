@@ -1,4 +1,4 @@
-library IAManager initializer Init requires Table, TimerUtils, WaveTest, TenderSystem, AIProfiles, AIConfig, TerrainPathability, WaveBarrierSkills, WaveAuraSkills, WaveRangedSkills, WaveSiegeSkills, WaveMortarSkills, WavePriestSkills, WaveTrapSkills, WaveSiegeZoneSkills, WaveWaveformSkills, TextTagDebug, AIManagerUtils
+library IAManager initializer Init requires Table, TimerUtils, WaveTest, AIProfiles, AIConfig, TerrainPathability, TextTagDebug, AIManagerUtils
 
     globals
         private constant integer AI_TICK_MS = 500
@@ -325,20 +325,8 @@ library IAManager initializer Init requires Table, TimerUtils, WaveTest, TenderS
     endfunction
 
     private function AIGetFallbackObjectiveTarget takes unit source returns unit
-        local unit target
-        if source == null then
-            return null
-        endif
-        set target = GetTenderUnit()
-        if target == null or GetUnitTypeId(target) == 0 or not UnitAlive(target) then
-            set target = null
-            return null
-        endif
-        if not IsUnitEnemy(target, GetOwningPlayer(source)) then
-            set target = null
-            return null
-        endif
-        return target
+        // Phase 1 rebuild: no Tender objective. Enemies target tracked heroes only.
+        return null
     endfunction
 
     private function AIIsCombatObjective takes unit source, unit target returns boolean
@@ -1452,59 +1440,8 @@ private function AIApplyMovement takes unit u, unit target, integer hid, integer
             return true
         endif
 
-        if WaveBarrierSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveAuraSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveRangedSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveSiegeSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveMortarSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WavePriestSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveTrapSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveSiegeZoneSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
-
-        if WaveWaveformSkillsTryExecute(u, target, AIClockMs) then
-            set AIUnitNextOrderMs[hid] = AIClockMs + AIIntervalToMs(AIGetProfileOrderInterval(profileId), 350)
-            set target = null
-            return true
-        endif
+        // Phase 1 rebuild: enemy spell packages are disabled.
+        // Keep teleport/native profile casts below, but do not call WaveProjectiles skills.
 
         set nextAbility = AIUnitNextAbilityMs[hid]
         if AIClockMs >= nextAbility then
@@ -1802,7 +1739,6 @@ private function AIApplyMovement takes unit u, unit target, integer hid, integer
             set hero = null
         endif
         set AITrackedHeroByPlayer[playerId] = hero
-        call WaveRangedSkillsSetTrackedHeroForPlayer(playerId, hero)
         if AIDebugEnabled then
             if hero != null then
                 call AILog("TrackedHero p=" + I2S(playerId) + " ut=" + I2S(GetUnitTypeId(hero)) + " owner=" + I2S(GetPlayerId(GetOwningPlayer(hero))))

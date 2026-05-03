@@ -1,4 +1,4 @@
-library RestTimeEndFlow requires HeroLives, TenderSystem, PreConfi, PlayerUtils, RestTimeState, RestTimeCountdown, RestTimeSurvivalEnd, RestTimeUI
+library RestTimeEndFlow requires HeroLives, PreConfi, PlayerUtils, RestTimeState, RestTimeCountdown, RestTimeSurvivalEnd, RestTimeUI
 
     private function RestTimeRewardActivePlayers takes nothing returns nothing
         local integer i = 0
@@ -14,10 +14,7 @@ library RestTimeEndFlow requires HeroLives, TenderSystem, PreConfi, PlayerUtils,
     endfunction
 
     private function RestTimeAnimateTender takes nothing returns nothing
-        if GetTenderUnit() != null then
-            call SetUnitAnimation(GetTenderUnit(), "Birth")
-            call QueueUnitAnimationBJ(GetTenderUnit(), "stand")
-        endif
+        // Phase 1 rebuild: no Tender unit/system.
     endfunction
 
     function RestTimeOnWaveFinished takes string nextWaveFunc returns nothing
